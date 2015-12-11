@@ -9,12 +9,6 @@ public class GalleryItem {
     private String mId;
     private String mUrl;
 
-//    public GalleryItem(String caption, String id, String url) {
-//        mCaption = caption;
-//        mId = id;
-//        mUrl = url;
-//    }
-
     public String getCaption() {
         return mCaption;
     }
