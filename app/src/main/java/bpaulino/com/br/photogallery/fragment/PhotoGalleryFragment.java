@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,20 +50,20 @@ public class PhotoGalleryFragment extends Fragment {
         setRetainInstance(true);
         new FetchItemsTask().execute();
 
-        Handler responseHandler = new Handler();
-
-        mThumbnailDownloaderService = new ThumbnailDownloaderService<>(responseHandler);
-        mThumbnailDownloaderService.setThumbnailDownloadListener(
-                new ThumbnailDownloaderService.ThumbnailDownloadListener<PhotoHolder>() {
-            @Override
-            public void onThumbnailDownload(PhotoHolder target, Bitmap thumbnail) {
-                Log.i(TAG, "New Image comming");
-                Drawable drawable = new BitmapDrawable(getResources(), thumbnail);
-                target.bindDrawable(drawable);
-            }
-        });
-        mThumbnailDownloaderService.start();
-        mThumbnailDownloaderService.getLooper();
+//        Handler responseHandler = new Handler();
+//
+//        mThumbnailDownloaderService = new ThumbnailDownloaderService<>(responseHandler);
+//        mThumbnailDownloaderService.setThumbnailDownloadListener(
+//                new ThumbnailDownloaderService.ThumbnailDownloadListener<PhotoHolder>() {
+//            @Override
+//            public void onThumbnailDownload(PhotoHolder target, Bitmap thumbnail) {
+//                Log.i(TAG, "New Image comming");
+//                Drawable drawable = new BitmapDrawable(getResources(), thumbnail);
+//                target.bindDrawable(drawable);
+//            }
+//        });
+//        mThumbnailDownloaderService.start();
+//        mThumbnailDownloaderService.getLooper();
         Log.i(TAG, "BACKGROUND Thread Started");
     }
 
@@ -81,7 +83,7 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mThumbnailDownloaderService.quit();
+//        mThumbnailDownloaderService.quit();
         Log.i(TAG, "BACKGROUND Thread Destroyed");
 
     }
@@ -89,7 +91,7 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mThumbnailDownloaderService.clearQueue();
+//        mThumbnailDownloaderService.clearQueue();
     }
 
     // =========================================================================================
@@ -105,6 +107,13 @@ public class PhotoGalleryFragment extends Fragment {
 
         public void bindDrawable(Drawable drawable) {
             mImageView.setImageDrawable(drawable);
+        }
+
+        public void bindGalleryItem(GalleryItem galleryItem) {
+            Picasso.with(getActivity())
+                    .load(galleryItem.getUrl())
+                    .placeholder(R.drawable.placeholder)
+                    .into(mImageView);
         }
 
     }
@@ -131,8 +140,9 @@ public class PhotoGalleryFragment extends Fragment {
         public void onBindViewHolder(PhotoHolder holder, int position) {
             GalleryItem galleryItem = mGalleryItems.get(position);
             Drawable placeholder = getResources().getDrawable(R.drawable.placeholder);
-            holder.bindDrawable(placeholder);
-            mThumbnailDownloaderService.queueThumbnail(holder, galleryItem.getUrl());
+//            holder.bindDrawable(placeholder);
+//            mThumbnailDownloaderService.queueThumbnail(holder, galleryItem.getUrl());
+            holder.bindGalleryItem(galleryItem);
         }
 
         @Override
