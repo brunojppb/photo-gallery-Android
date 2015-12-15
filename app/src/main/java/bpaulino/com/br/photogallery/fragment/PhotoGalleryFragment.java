@@ -1,5 +1,6 @@
 package bpaulino.com.br.photogallery.fragment;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -30,6 +31,7 @@ import java.util.List;
 import bpaulino.com.br.photogallery.R;
 import bpaulino.com.br.photogallery.model.GalleryItem;
 import bpaulino.com.br.photogallery.service.FlickrService;
+import bpaulino.com.br.photogallery.service.PollService;
 import bpaulino.com.br.photogallery.service.ThumbnailDownloaderService;
 import bpaulino.com.br.photogallery.util.QueryPreferences;
 
@@ -54,6 +56,10 @@ public class PhotoGalleryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         updateItems();
+
+        Intent it = PollService.newIntent(getActivity());
+        getActivity().startService(it);
+
         setHasOptionsMenu(true);
         Log.i(TAG, "BACKGROUND Thread Started");
     }
