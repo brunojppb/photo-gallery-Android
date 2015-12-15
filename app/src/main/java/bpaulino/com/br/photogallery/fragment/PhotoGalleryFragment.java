@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.view.menu.MenuItemWrapperICS;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -27,6 +28,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.sql.PooledConnection;
 
 import bpaulino.com.br.photogallery.R;
 import bpaulino.com.br.photogallery.model.GalleryItem;
@@ -57,9 +60,6 @@ public class PhotoGalleryFragment extends Fragment {
         setRetainInstance(true);
         updateItems();
 
-        Intent it = PollService.newIntent(getActivity());
-        getActivity().startService(it);
-
         setHasOptionsMenu(true);
         Log.i(TAG, "BACKGROUND Thread Started");
     }
@@ -85,7 +85,9 @@ public class PhotoGalleryFragment extends Fragment {
         // add listener to SearchView
         final MenuItem searchItem = menu.findItem(R.id.menu_item_search);
         final SearchView searchView = (SearchView) searchItem.getActionView();
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.d(TAG, "QueryTextSubmit: " + query);
@@ -110,6 +112,14 @@ public class PhotoGalleryFragment extends Fragment {
                 searchView.setQuery(query, false);
             }
         });
+
+        MenuItem toggleItem = menu.findItem(R.id.menu_item_toggle_polling);
+        if(PollService.isServiceAlarmOn(getActivity())) {
+            toggleItem.setTitle(R.string.stop_polling);
+        }
+        else {
+            toggleItem.setTitle(R.string.start_polling);
+        }
     }
 
     @Override
@@ -118,6 +128,12 @@ public class PhotoGalleryFragment extends Fragment {
             case R.id.menu_item_clear:
                 QueryPreferences.setStoredQuery(getActivity(), null);
                 updateItems();
+                return true;
+
+            case R.id.menu_item_toggle_polling:
+                boolean shouldStartAlarm = !PollService.isServiceAlarmOn(getActivity());
+                PollService.setServiceAlarm(getActivity(), shouldStartAlarm);
+                getActivity().invalidateOptionsMenu();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
